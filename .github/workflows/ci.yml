@@ -2,7 +2,7 @@ name: Python CI
 
 on:
   push:
-    branches: [ main, branch/CICDApp ]  # Added your current branch
+    branches: [ main, branch/CICDApp ]
   pull_request:
     branches: [ main ]
 
@@ -11,12 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: '3.x'
+        cache: 'pip'
     
     - name: Install dependencies
       run: |
@@ -29,10 +30,11 @@ jobs:
         python -m pytest test_todo_app.py -v --junitxml=test-results.xml --cov=. --cov-report=html
         
     - name: Upload test results
-      uses: actions/upload-artifact@v2
-      if: always()  # This ensures test results are uploaded even if tests fail
+      uses: actions/upload-artifact@v4
+      if: always()
       with:
         name: test-results
         path: |
           test-results.xml
           htmlcov/
+        retention-days: 30
