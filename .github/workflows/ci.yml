@@ -2,7 +2,7 @@ name: Python CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, branch/CICDApp ]  # Added your current branch
   pull_request:
     branches: [ main ]
 
@@ -26,10 +26,13 @@ jobs:
     
     - name: Run tests with coverage
       run: |
-        python -m pytest test_todo_app.py --cov=. --cov-report=xml
-    
-    - name: Upload coverage report
-      uses: codecov/codecov-action@v3
+        python -m pytest test_todo_app.py -v --junitxml=test-results.xml --cov=. --cov-report=html
+        
+    - name: Upload test results
+      uses: actions/upload-artifact@v2
+      if: always()  # This ensures test results are uploaded even if tests fail
       with:
-        file: ./coverage.xml
-        fail_ci_if_error: true
+        name: test-results
+        path: |
+          test-results.xml
+          htmlcov/
